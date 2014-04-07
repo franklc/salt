@@ -10,7 +10,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "hfm4/centos-with-docker"
+  config.vm.box = "hashicorp/precise64"
+  config.vm.hostname = "salt"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -23,7 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.0.42"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -39,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-  config.vm.synced_folder "srv/salt", "/srv/salt"
+  config.vm.synced_folder "salt/roots/", "/srv/"
   
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -118,8 +119,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   chef.validation_client_name = "ORGNAME-validator"
     config.vm.provision :salt do |salt|
 
-      salt.minion_config = "minion"
-      salt.run_highstate = true
-
+      #salt.minion_config = "salt/minion"
+      salt.master_config = "salt/master"
+      salt.install_master = true
+	  #salt.seed_master = {minion: salt.minion_pub}
+	  #salt.run_highstate = true
+	  
     end
 end
